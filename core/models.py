@@ -15,6 +15,9 @@ class Evento(models.Model):
     def __str__(self):
         return self.titulo
 
+    def get_data_evento(self):
+        return self.data_evento.strftime('%d/%m/%Y %H:%M Hrs')
+
     ##migro a classe para o banco de dados para ela virar uma tabela e especifico o nome do meu app
 
 # Create your models here.
