@@ -47,7 +47,12 @@ def lista_eventos(req):
 
 @login_required(login_url='/login/')
 def evento(req):
-    return render(req, 'evento.html')
+    id_evento = req.GET.get('id')
+    dados = {}
+    if id_evento:
+        dados['evento'] = Evento.objects.get(id=id_evento)
+
+    return render(req, 'evento.html', dados)
 
 
 @login_required(login_url='/login/')
@@ -58,9 +63,35 @@ def submit_evento(req):
         descricao = req.POST.get('descricao')
         local = req.POST.get('local')
         usuario = req.user
-        Evento.objects.create(titulo=titulo, data_evento=data_evento,
-                              descricao=descricao, local=local, usuario=usuario)
+        id_evento = req.POST.get('id_evento')
+        if id_evento:
+            evento = Evento.objects.get(id=id_evento)
+            # 2Formas de como fazer o update
 
+            # 1forma
+            if evento.usuario == usuario:
+                evento.titulo = titulo
+                evento.descricao = descricao
+                evento.data_evento = data_evento
+                evento.local = local
+                evento.save()
+
+                # 2forma
+        # Evento.objects.filter(id=id_evento).update(titulo=titulo, data_evento=data_evento,
+        #            descricao=descricao, local=local)
+        else:
+            Evento.objects.create(titulo=titulo, data_evento=data_evento,
+                                  descricao=descricao, local=local, usuario=usuario)
+
+    return redirect('/')
+
+
+@login_required(login_url='/login/')
+def delete_evento(req, id_evento):
+    usuario = req.user
+    evento = Evento.objects.get(id=id_evento)
+    if usuario == evento.usuario:
+        evento.delete()
     return redirect('/')
 
 # Create your views here.
