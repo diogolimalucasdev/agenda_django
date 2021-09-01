@@ -44,9 +44,11 @@ def lista_eventos(req):
     dados = {'eventos': evento}
     return render(req, 'agenda.html', dados)
 
+
 @login_required(login_url='/login/')
 def evento(req):
     return render(req, 'evento.html')
+
 
 @login_required(login_url='/login/')
 def submit_evento(req):
@@ -54,11 +56,10 @@ def submit_evento(req):
         titulo = req.POST.get('titulo')
         data_evento = req.POST.get('data_evento')
         descricao = req.POST.get('descricao')
+        local = req.POST.get('local')
         usuario = req.user
         Evento.objects.create(titulo=titulo, data_evento=data_evento,
-                              descricao=descricao, usuario=usuario)
-
-
+                              descricao=descricao, local=local, usuario=usuario)
 
     return redirect('/')
 

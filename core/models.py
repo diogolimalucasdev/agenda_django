@@ -7,7 +7,9 @@ class Evento(models.Model):
     descricao = models.TextField(blank=True, null=True)
     data_evento = models.DateTimeField(verbose_name='Data do Evento')
     data_criacao = models.DateTimeField(auto_now=True)  # o auto_now insere a hora atual automaticamente
+    local = models.CharField(max_length=100)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+
 
     class Meta:
         db_table = 'evento'  # exigindo que minha tabela se chame "evento"
