@@ -1,8 +1,12 @@
+
+from django.contrib.auth.models import User
 from django.shortcuts import render, HttpResponse, redirect
 from core.models import Evento
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from datetime import datetime, timedelta
+from django.http.response import Http404, JsonResponse
 
 
 # esse é um metodo de redirecionar mas vou utlizar o que é diretamente pela url
@@ -40,7 +44,10 @@ def submit_login(req):
 @login_required(login_url='/login/')  # pra quando o usuario nao estiver autenticado ele me levar para essa rota
 def lista_eventos(req):
     usuario = req.user
-    evento = Evento.objects.filter(usuario=usuario)
+    data_atual = datetime.now() - timedelta(hours=1)
+    evento = Evento.objects.filter(usuario=usuario,
+                                   data_evento__gt=data_atual)
+    # data_evento__gt = data_atual o comando __gt traz datas acima da data atual e o lt abaixo
     dados = {'eventos': evento}
     return render(req, 'agenda.html', dados)
 
@@ -89,9 +96,21 @@ def submit_evento(req):
 @login_required(login_url='/login/')
 def delete_evento(req, id_evento):
     usuario = req.user
-    evento = Evento.objects.get(id=id_evento)
+    try:
+        evento = Evento.objects.get(id=id_evento)
+    except Exception:
+        raise Http404()
     if usuario == evento.usuario:
         evento.delete()
+    else:
+        raise Http404()
     return redirect('/')
+
+
+def json_lista_evento(req, id_usuario):
+    usuario = User.objects.get(id=id_usuario)
+    evento = Evento.objects.filter(usuario=usuario).values('id', 'titulo')
+
+    return JsonResponse(list(evento), safe=False)
 
 # Create your views here.

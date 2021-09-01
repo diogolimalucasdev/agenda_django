@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import datetime, timedelta
 
 
 class Evento(models.Model):
@@ -23,6 +24,16 @@ class Evento(models.Model):
 
     def get_data_input_evento(self):
         return self.data_evento.strftime('%Y-%m-%dT%H:%M')
+
+
+
+    def get_evento_atrasado(self):
+            if self.data_evento < datetime.now():
+                return True
+            else:
+                return False
+
+
 
     ##migro a classe para o banco de dados para ela virar uma tabela e especifico o nome do meu app
 
